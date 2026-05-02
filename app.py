@@ -33,58 +33,78 @@ n_mais_chopp = st.number_input("N+ Chopp por Comanda", min_value=0, value=1, ste
 
 st.divider()
 
+# --- SEÇÃO 3: INVESTIMENTO ---
 st.header("3. Custos do Sistema")
-investimento = st.number_input("Valor do Investimento na Ferramenta IoT (R$)", min_value=0.0, value=5000.00, step=100.0)
+
+col_custo1, col_custo2 = st.columns(2)
+with col_custo1:
+    custo_implantacao = st.number_input("Valor da Implantação (R$ - Pagamento Único)", min_value=0.0, value=2000.00, step=100.0)
+with col_custo2:
+    custo_mensal = st.number_input("Valor da Mensalidade (R$ / Mês)", min_value=0.0, value=500.00, step=50.0)
 
 st.divider()
 
-# --- CÁLCULOS (Igual à planilha) ---
-# Quantidade base de comandas por produto
+# --- LÓGICA DE CÁLCULO ---
+# Quantidade base
 qtd_comandas_cerveja = num_comandas * (perc_cerveja / 100)
 qtd_comandas_chopp = num_comandas * (perc_chopp / 100)
 
-# Quantidade de comandas que terão incremento
+# Impacto do IoT (Comandas atingidas)
 comandas_inc_cerveja = qtd_comandas_cerveja * (perc_inc_cerveja / 100)
 comandas_inc_chopp = qtd_comandas_chopp * (perc_inc_chopp / 100)
 
-# Receita gerada pelo incremento
-receita_inc_cerveja = comandas_inc_cerveja * n_mais_cerveja * valor_cerveja
-receita_inc_chopp = comandas_inc_chopp * n_mais_chopp * valor_chopp
+# Financeiro Mensal
+receita_inc_cerveja_mensal = comandas_inc_cerveja * n_mais_cerveja * valor_cerveja
+receita_inc_chopp_mensal = comandas_inc_chopp * n_mais_chopp * valor_chopp
+total_bruto_mensal = receita_inc_cerveja_mensal + receita_inc_chopp_mensal
 
-# Total de incremento financeiro
-total_incremento = receita_inc_cerveja + receita_inc_chopp
+# Financeiro Anual
+receita_inc_cerveja_anual = receita_inc_cerveja_mensal * 12
+receita_inc_chopp_anual = receita_inc_chopp_mensal * 12
+total_bruto_anual = total_bruto_mensal * 12
 
-# Cálculo do ROI: (Retorno - Custo) / Custo
-if investimento > 0:
-    roi_percentual = ((total_incremento - investimento) / investimento) * 100
+# Custos e ROI Anual
+custo_total_anual = custo_implantacao + (custo_mensal * 12)
+lucro_liquido_anual = total_bruto_anual - custo_total_anual
+
+if custo_total_anual > 0:
+    roi_anual = (lucro_liquido_anual / custo_total_anual) * 100
 else:
-    roi_percentual = 0.0
+    roi_anual = 0.0
 
-# --- SEÇÃO DE RESULTADOS ---
+# --- EXIBIÇÃO DOS RESULTADOS ---
 st.header("📈 Resultados da Simulação")
 
-# Exibindo os resultados em cards bonitos (métricas)
-col_res1, col_res2, col_res3 = st.columns(3)
+# Função para formatação de Moeda Brasileira
+def format_real(valor):
+    return f"R$ {valor:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
 
-col_res1.metric(label="Incremento Cerveja", value=f"R$ {receita_inc_cerveja:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'))
-col_res2.metric(label="Incremento Chopp", value=f"R$ {receita_inc_chopp:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'))
-col_res3.metric(label="Aumento Bruto Total", value=f"R$ {total_incremento:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'))
+# VISÃO MENSAL
+st.subheader("📅 Visão Mensal")
+c1, c2, c3 = st.columns(3)
+c1.metric("Aumento Cerveja (Mês)", format_real(receita_inc_cerveja_mensal))
+c2.metric("Aumento Chopp (Mês)", format_real(receita_inc_chopp_mensal))
+c3.metric("Total Bruto (Mês)", format_real(total_bruto_mensal))
 
-st.write("") # Espaço
+st.write("") # Espaço em branco
 
-# Destaque para o ROI e Lucro Líquido
-lucro_liquido = total_incremento - investimento
-st.success(f"**Lucro Líquido Estimado (Total - Investimento):** R$ {lucro_liquido:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.'))
+# VISÃO ANUAL
+st.subheader("🗓️ Visão Anual (12 Meses)")
+c4, c5, c6 = st.columns(3)
+c4.metric("Aumento Cerveja (Ano)", format_real(receita_inc_cerveja_anual))
+c5.metric("Aumento Chopp (Ano)", format_real(receita_inc_chopp_anual))
+c6.metric("Total Bruto (Ano)", format_real(total_bruto_anual))
 
-if investimento > 0:
-    if roi_percentual >= 0:
-        st.info(f"🚀 **ROI (Retorno sobre Investimento):** {roi_percentual:.2f}%")
-    else:
-        st.error(f"⚠️ **ROI (Retorno sobre Investimento):** {roi_percentual:.2f}% (Prejuízo)")
+st.divider()
 
-# # Tabela de apoio para conferência de números (opcional, para ver as bases)
-# with st.expander("Ver detalhes dos cálculos (Oculto)"):
-#     st.write(f"- Comandas Cerveja Mês: {qtd_comandas_cerveja:,.0f}")
-#     st.write(f"- Comandas Chopp Mês: {qtd_comandas_chopp:,.0f}")
-#     st.write(f"- Comandas Cerveja c/ Incremento ({perc_inc_cerveja}%): {comandas_inc_cerveja:,.0f}")
-#     st.write(f"- Comandas Chopp c/ Incremento ({perc_inc_chopp}%): {comandas_inc_chopp:,.0f}")
+# ROI ANUAL
+st.header("💰 Análise de Retorno (1º Ano)")
+st.write(f"Custo total estimado no primeiro ano (Implantação + 12x Mensalidades): **{format_real(custo_total_anual)}**")
+
+if lucro_liquido_anual > 0:
+    st.success(f"**Ganho Líquido Estimado no Ano (Receita Total - Custos):** {format_real(lucro_liquido_anual)}")
+    st.balloons()
+else:
+    st.error(f"**Resultado Líquido Anual:** {format_real(lucro_liquido_anual)}")
+
+st.info(f"🚀 **ROI Anual (Retorno sobre Investimento):** {roi_anual:.2f}%")
