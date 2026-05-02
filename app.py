@@ -100,7 +100,6 @@ st.write(f"Custo total estimado no primeiro ano (Implantação + 12x Mensalidade
 
 if lucro_liquido_anual > 0:
     st.success(f"**Ganho Líquido Estimado no Ano (Receita Total - Custos):** {format_real(lucro_liquido_anual)}")
-    st.balloons()
 else:
     st.error(f"**Resultado Líquido Anual:** {format_real(lucro_liquido_anual)}")
 
