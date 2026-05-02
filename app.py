@@ -36,11 +36,8 @@ st.divider()
 # --- SEÇÃO 3: INVESTIMENTO ---
 st.header("3. Custos do Sistema")
 
-col_custo1, col_custo2 = st.columns(2)
-with col_custo1:
-    custo_implantacao = st.number_input("Valor da Implantação (R$ - Pagamento Único)", min_value=0.0, value=2000.00, step=100.0)
-with col_custo2:
-    custo_mensal = st.number_input("Valor da Mensalidade (R$ / Mês)", min_value=0.0, value=500.00, step=50.0)
+custo_implantacao = st.number_input("Valor da Implantação (R$ - Pagamento Único)", min_value=0.0, value=2000.00, step=100.0)
+custo_mensal = st.number_input("Valor da Mensalidade (R$ / Mês)", min_value=0.0, value=500.00, step=50.0)
 
 st.divider()
 
