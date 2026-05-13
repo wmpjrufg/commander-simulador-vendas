@@ -3,6 +3,17 @@ import streamlit as st
 # Configuração da página
 st.set_page_config(page_title="Simulador de Incremento de Vendas", layout="centered")
 
+# ==================== LOGO DA EMPRESA ====================
+# Altere "minha_empresa.png" para o nome do seu arquivo
+LOGO_PATH = "PERFIL COMANDANTE_2.png"  # Arquivo na raiz do projeto
+
+# Adiciona logo na barra lateral
+# Centraliza a logo no topo
+col1, col2, col3 = st.columns([1, 2, 1])
+with col1:
+    st.image(LOGO_PATH, width=200)  # Ajuste o width conforme necessário
+# =========================================================
+
 st.title("📊 Simulador de Incremento de Vendas (IoT)")
 st.write("Simule o impacto do sistema nas vendas por comanda do seu cliente no mês, além de projetar o Retorno sobre o Investimento (ROI).")
 
